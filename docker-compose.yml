@@ -1,0 +1,54 @@
+services:
+  rabbit:
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    container_name: rabbit_container
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: $RABBIT_USER
+      RABBITMQ_DEFAULT_PASS: $RABBIT_PASS
+    volumes:
+      - rabbitqm_data:/var/lib/rabbitmq
+
+  postgres:
+    image: postgres
+    container_name: postgres_container
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_DB: $POSTGRES_DB
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.bot
+    container_name: bot_container
+    depends_on:
+      - postgres
+      - rabbit
+    volumes:
+      - .:/usr/src/bot
+
+  crawler:
+    build:
+      context: .
+      dockerfile: Dockerfile.crawler
+    container_name: crawler_container
+    depends_on:
+      - postgres
+      - rabbit
+      - bot
+    command: python -m src.main
+    volumes:
+      - .:/usr/src/crawler
+
+
+volumes:
+  rabbitqm_data:
+  postgres_data:
