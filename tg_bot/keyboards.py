@@ -1,12 +1,11 @@
 from aiogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-    ReplyKeyboardMarkup,
-    KeyboardButton
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from repository import repository
+
 
 repository = repository.Repository()
 
@@ -49,10 +48,3 @@ def create_subscribed_teams(user_chat_id: int) -> InlineKeyboardMarkup:
         kb.row(button)
 
     return kb.as_markup()
-
-
-def request_location_kb():
-    button = KeyboardButton(text="Отправить геолокацию", request_location=True)
-    kb = ReplyKeyboardMarkup(keyboard=[[button]], resize_keyboard=True)
-    
-    return kb

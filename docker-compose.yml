@@ -1,7 +1,6 @@
 services:
   rabbit:
     image: rabbitmq:3-management
-    hostname: rabbitmq
     container_name: rabbit_container
     ports:
       - "5672:5672"
@@ -27,28 +26,30 @@ services:
   bot:
     build:
       context: .
-      dockerfile: Dockerfile.bot
+      dockerfile: docker/bot/Dockerfile.bot
     container_name: bot_container
+    command: >
+      sh -c "/wait-for-it.sh rabbit:5672 --timeout=60 --strict
+      && /wait-for-it.sh postgres:5432 --timeout=60 --strict
+      && python -m tg_bot.main"
     depends_on:
       - postgres
       - rabbit
     volumes:
-      - .:/usr/src/bot
+      - .:/usr/bot
 
-  crawler:
+  main:
     build:
       context: .
-      dockerfile: Dockerfile.crawler
-    container_name: crawler_container
+      dockerfile: docker/main/Dockerfile.main
+    container_name: main_container
     depends_on:
       - postgres
       - rabbit
       - bot
-    command: python -m src.main
     volumes:
-      - .:/usr/src/crawler
-
-
+      - .:/usr/main
+  
 volumes:
   rabbitqm_data:
   postgres_data:

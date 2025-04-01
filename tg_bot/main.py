@@ -4,17 +4,18 @@ import logging
 
 from aiogram import Bot, Dispatcher
 
-from .handlers import router
+from tg_bot.handlers import handlers_router
+from tg_bot.dependencies import container
 
 
 bot = Bot(token=os.getenv("BOT_TOKEN"))
-dp = Dispatcher()
+dispatcher = Dispatcher()
+dispatcher.include_router(handlers_router)
 
 
-async def main():
-    dp.include_router(router)
-    
-    await dp.start_polling(bot)
+async def main() -> None:
+    container.initialize(bot)
+    await dispatcher.start_polling(bot)
 
 
 if __name__ == "__main__":

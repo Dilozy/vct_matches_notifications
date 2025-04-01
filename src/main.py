@@ -1,19 +1,34 @@
 import time
+import logging
 
-from ..src.scheduler import JobsScheduler
-from ..src.crawler import MatchesDataCrawler
+from src.scheduler import JobsScheduler
+from src.api_processor import MatchesDataProcessor
 
 
-def main():
-    scheduler = JobsScheduler()
-    crawler = MatchesDataCrawler()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-    scheduler.daily_matches_check(crawler)
+scheduler = JobsScheduler()
+matches_processor = MatchesDataProcessor()
+
+
+def process_matches() -> None:
+    matches = matches_processor.get_matches_data()
+    logger.info(f"Найдено матчей: {len(matches)}")
+    
+    for match_ in matches:
+        scheduler.process_matches_notifications(*match_)
+
+
+def main() -> None:
+    scheduler.daily_matches_check(process_matches) 
+    logger.info("Планировщик запущен. Ожидание задач...")
 
     try:
         while True:
             time.sleep(1)
-    except(KeyboardInterrupt, SystemExit):
+    except (KeyboardInterrupt, SystemExit):
+        logger.info("Завершение работы планировщика...")
         scheduler.shutdown()
 
 

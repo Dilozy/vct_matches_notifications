@@ -10,8 +10,6 @@ class SubscribersORM(Base):
     __tablename__ = "subscribers"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    timezone: Mapped[str]
-    
     
     subscribed_to: Mapped[list["TeamsORM"]] = relationship(
         back_populates="subscribers",
@@ -26,7 +24,6 @@ class TeamsORM(Base):
     region_name: Mapped[int] = mapped_column(ForeignKey("regions.name", ondelete="CASCADE"))
     region: Mapped["RegionsORM"] = relationship(
         back_populates="teams",
-        lazy="joined",
     )
     subscribers: Mapped[list["SubscribersORM"]] = relationship(
         back_populates="subscribed_to",
@@ -48,6 +45,6 @@ class RegionsORM(Base):
 class Subscriptions(Base):
     __tablename__ = "subscriptions"
 
-    team_name: Mapped[int] = mapped_column(ForeignKey("teams.name", ondelete="CASCADE"),
+    team_name: Mapped[str] = mapped_column(ForeignKey("teams.name", ondelete="CASCADE"),
                                          primary_key=True)
     subscriber_id: Mapped[int] = mapped_column(ForeignKey("subscribers.id"), primary_key=True)
