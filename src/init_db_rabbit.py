@@ -66,7 +66,7 @@ def initialize_db() -> None:
 
             except Exception as err:
                 session.rollback()
-                print(f"Ошибка при инициализации данных: {err}")
+                print(f"Data initialization error: {err}")
 
         else:
             print("Data already exists, skipping initialization.")
