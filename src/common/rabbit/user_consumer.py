@@ -8,7 +8,7 @@ from aio_pika import Channel
 
 from aiogram import Bot
 
-from src.repository.repository import Repository
+from src.common.repository.repository import Repository
 
 
 logging.basicConfig(level=logging.INFO)

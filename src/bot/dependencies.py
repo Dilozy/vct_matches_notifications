@@ -1,5 +1,5 @@
 from aiogram import Bot
-from src.rabbit.user_consumer import UserConsumer
+from src.common.rabbit.user_consumer import UserConsumer
 
 
 class DIContainer:

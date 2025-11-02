@@ -1,8 +1,8 @@
 import time
 import logging
 
-from src.app.scheduler import JobsScheduler
-from src.app.api_processor import MatchesDataProcessor
+from src.services.scheduler.service import JobsScheduler
+from src.services.vlr_client.api_processor import MatchesDataProcessor
 
 
 logging.basicConfig(level=logging.INFO)

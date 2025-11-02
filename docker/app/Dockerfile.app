@@ -16,18 +16,22 @@ WORKDIR /app
 ENV PYTHONPATH=/app
 
 COPY pyproject.toml poetry.lock ./
-COPY docker/main docker/
+COPY docker/app docker/
 COPY docker/wait-for-it.sh docker/
-COPY docker/entrypoint_main.sh docker/
+COPY docker/entrypoint_app.sh docker/
 
 RUN poetry install --no-root --no-interaction --no-ansi
-RUN chmod +x docker/entrypoint_main.sh
-RUN sed -i 's/\r$//' docker/entrypoint_main.sh docker/wait-for-it.sh
+RUN chmod +x docker/entrypoint_app.sh
+RUN sed -i 's/\r$//' docker/entrypoint_app.sh docker/wait-for-it.sh
 
 WORKDIR /app/src
 
-COPY . .
+COPY src/common .
+COPY src/services .
+COPY src/__init__.py .
+COPY src/init_data.py .
+COPY src/main.py .
 
-WORKDIR /app
+WORKDIR /
 
-ENTRYPOINT [ "/bin/sh", "docker/entrypoint_main.sh" ]
+ENTRYPOINT [ "/bin/sh", "docker/entrypoint_app.sh" ]

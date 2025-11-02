@@ -2,12 +2,12 @@ from aiogram.filters import Command, CommandStart
 from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery
 
-from src.tg_bot.keyboards import (
+from src.bot.keyboards import (
     create_regions_kb, create_teams_in_region_kb,
     create_subscribed_teams
 )
-from src.repository import repository
-from src.tg_bot.dependencies import container
+from src.common.repository import repository
+from src.bot.dependencies import container
 
 
 handlers_router = Router()

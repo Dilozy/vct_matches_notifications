@@ -4,8 +4,8 @@ import logging
 
 from aiogram import Bot, Dispatcher
 
-from src.tg_bot.handlers import handlers_router
-from src.tg_bot.dependencies import container
+from src.bot.handlers import handlers_router
+from src.bot.dependencies import container
 
 
 bot = Bot(token=os.getenv("BOT_TOKEN"))

@@ -8,9 +8,9 @@ from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
-from src.repository.config import get_db_connection_url
-from src.repository.database import engine
-from src.rabbit.producer import produce_message
+from src.common.repository.config import get_db_connection_url
+from src.common.repository.database import engine
+from src.common.rabbit.producer import produce_message
 
 
 class MatchCountdown:

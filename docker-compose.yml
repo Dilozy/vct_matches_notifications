@@ -32,7 +32,8 @@ services:
       - postgres
       - rabbit
     volumes:
-      - .:/usr/bot
+      - ./src/bot:/app/src/bot
+      - ./src/common:/app/src/common
 
   main:
     build:
@@ -44,8 +45,11 @@ services:
       - rabbit
       - bot
     volumes:
-      - .:/usr/main
-  
+      - ./src/services:/app/src/services
+      - ./src/common:/app/src/common
+      - ./src/main.py:/app/src/main.py
+      - ./src/init_data.py:/app/src/init_data.py
+      - ./src/__init__.py:/app/src/__init__.py
 volumes:
   rabbitqm_data:
   postgres_data:

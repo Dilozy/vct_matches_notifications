@@ -1,7 +1,7 @@
 from sqlalchemy import select, delete, exists
 
-from src.repository.database import session_factory
-from src.repository.models import SubscribersORM, TeamsORM, Subscriptions, RegionsORM
+from src.common.repository.database import session_factory
+from src.common.repository.models import SubscribersORM, TeamsORM, Subscriptions, RegionsORM
 
 
 class Repository:
