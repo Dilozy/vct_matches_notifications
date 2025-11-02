@@ -7,43 +7,43 @@ class Base(DeclarativeBase):
     pass
 
 
-class SubscribersORM(Base):
+class Subscriber(Base):
     __tablename__ = "subscribers"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     
-    subscribed_to: Mapped[list["TeamsORM"]] = relationship(
+    subscribed_to: Mapped[list["Team"]] = relationship(
         back_populates="subscribers",
         secondary="subscriptions",
     )
 
 
-class TeamsORM(Base):
+class Team(Base):
     __tablename__ = "teams"
 
     name: Mapped[str] = mapped_column(primary_key=True)
     region_name: Mapped[int] = mapped_column(ForeignKey("regions.name", ondelete="CASCADE"))
-    region: Mapped["RegionsORM"] = relationship(
+    region: Mapped["Region"] = relationship(
         back_populates="teams",
     )
-    subscribers: Mapped[list["SubscribersORM"]] = relationship(
+    subscribers: Mapped[list["Subscriber"]] = relationship(
         back_populates="subscribed_to",
         secondary="subscriptions"
     )
 
     def __repr__(self):
-        return f"TeamsORM(name={self.name})"
+        return f"Team(name={self.name})"
 
-class RegionsORM(Base):
+class Region(Base):
     __tablename__ = "regions"
 
     name: Mapped[str] = mapped_column(primary_key=True)
-    teams: Mapped[list["TeamsORM"]] = relationship(
+    teams: Mapped[list["Team"]] = relationship(
         back_populates="region",
         cascade="all, delete-orphan",
     )
 
-class Subscriptions(Base):
+class Subscription(Base):
     __tablename__ = "subscriptions"
 
     team_name: Mapped[str] = mapped_column(ForeignKey("teams.name", ondelete="CASCADE"),

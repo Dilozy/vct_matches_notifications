@@ -5,7 +5,7 @@ import pika
 from sqlalchemy import inspect
 
 from src.common.db.connect import session_factory, Base, engine
-from src.common.db.models import TeamsORM, RegionsORM
+from src.common.db.models import Team, Region
 
 
 teams_data = {
@@ -50,15 +50,15 @@ def initialize_db() -> None:
 
 
     with session_factory() as session:
-        if not session.query(TeamsORM).first():
+        if not session.query(Team).first():
             try:
                 session.add_all(
-                    [RegionsORM(name=region) for region in teams_data]
+                    [Region(name=region) for region in teams_data]
                     )
                 
                 for region in teams_data:
                     session.add_all(
-                        [TeamsORM(name=team, region_name=region) for team in teams_data[region]]
+                        [Team(name=team, region_name=region) for team in teams_data[region]]
                         )
                 session.commit()
                 

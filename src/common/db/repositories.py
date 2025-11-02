@@ -1,7 +1,7 @@
 from sqlalchemy import select, delete, exists
 
 from src.common.db.connect import session_factory
-from src.common.db.models import SubscribersORM, TeamsORM, Subscriptions, RegionsORM
+from src.common.db.models import Subscriber, Team, Subscription, Region
 
 
 class TeamRepository:
@@ -9,16 +9,16 @@ class TeamRepository:
     def select_not_subscribed_teams(user_chat_id: int, region: str) -> list[str]:
         with session_factory() as session:
             subq = (
-                select(Subscriptions.team_name)
-                .where(Subscriptions.subscriber_id == user_chat_id)
+                select(Subscription.team_name)
+                .where(Subscription.subscriber_id == user_chat_id)
                 .scalar_subquery()
                 )
             
             available_teams_query = (
-                select(TeamsORM.name)
-                .where(TeamsORM.region_name == region)
-                .where(~TeamsORM.name.in_(subq))
-                .order_by(TeamsORM.name.asc())
+                select(Team.name)
+                .where(Team.region_name == region)
+                .where(~Team.name.in_(subq))
+                .order_by(Team.name.asc())
             )
 
             result = session.execute(available_teams_query).scalars().all()
@@ -28,7 +28,7 @@ class TeamRepository:
     @staticmethod
     def list_teams() -> list[str]:
         with session_factory() as session:
-            stmt = select(TeamsORM.name)
+            stmt = select(Team.name)
             return session.execute(stmt).scalars().all()
 
 
@@ -36,13 +36,13 @@ class SubscriberRepository:
     @staticmethod
     def check_subscriber(user_chat_id: int) -> bool:
         with session_factory() as session:
-            stmt = select(exists().where(SubscribersORM.id == user_chat_id))
+            stmt = select(exists().where(Subscriber.id == user_chat_id))
             return session.execute(stmt).scalar()
 
     @staticmethod
-    def create_subscriber(user_chat_id: int) -> SubscribersORM:
+    def create_subscriber(user_chat_id: int) -> Subscriber:
         with session_factory() as session:
-            user = SubscribersORM(id=user_chat_id)
+            user = Subscriber(id=user_chat_id)
             session.add(user)
 
             session.commit()
@@ -52,9 +52,9 @@ class SubscriberRepository:
     def list_subscribers(team_names: list[str]) -> list[int]:
         with session_factory() as session:
             stmt = (
-                select(SubscribersORM.id)
-                .join(SubscribersORM.subscribed_to)
-                .where(TeamsORM.name.in_(team_names))
+                select(Subscriber.id)
+                .join(Subscriber.subscribed_to)
+                .where(Team.name.in_(team_names))
             )
             return session.execute(stmt).scalars().all()
 
@@ -63,9 +63,9 @@ class SubscriptionRepository:
     @staticmethod
     def add_subscription(user_chat_id: int, team_name: str) -> None:
         with session_factory() as session:
-            subscriber = session.get(SubscribersORM, user_chat_id)
+            subscriber = session.get(Subscriber, user_chat_id)
             
-            team = session.query(TeamsORM).filter(TeamsORM.name==team_name).first()
+            team = session.query(Team).filter(Team.name==team_name).first()
 
             if team not in subscriber.subscribed_to:
                 subscriber.subscribed_to.append(team)
@@ -76,10 +76,10 @@ class SubscriptionRepository:
     def list_subscriptions(user_chat_id: int) -> dict[str, str]:
         with session_factory() as session:
             query = (
-                select(TeamsORM.name, RegionsORM.name)
-                .join(TeamsORM.subscribers)
-                .join(TeamsORM.region)
-                .filter(SubscribersORM.id == user_chat_id)
+                select(Team.name, Region.name)
+                .join(Team.subscribers)
+                .join(Team.region)
+                .filter(Subscriber.id == user_chat_id)
             )
 
             return dict(session.execute(query).all())
@@ -88,11 +88,10 @@ class SubscriptionRepository:
     def remove_subscription(user_chat_id: int, team: str) -> None:
         with session_factory() as session:
             delete_query = (
-                delete(Subscriptions)
-                .where(Subscriptions.subscriber_id == user_chat_id)
-                .where(Subscriptions.team_name == team)
+                delete(Subscription)
+                .where(Subscription.subscriber_id == user_chat_id)
+                .where(Subscription.team_name == team)
             )
 
             session.execute(delete_query)
             session.commit()
-    
