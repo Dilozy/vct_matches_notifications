@@ -4,7 +4,7 @@ from aiogram.types import (
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from repository import repository
+from src.repository import repository
 
 
 repository = repository.Repository()

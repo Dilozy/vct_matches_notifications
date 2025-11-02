@@ -5,7 +5,7 @@ import requests
 from pytz import utc
 from requests.exceptions import Timeout, ConnectionError, HTTPError
 
-from repository.repository import Repository
+from src.repository.repository import Repository
 
 
 repository = Repository()

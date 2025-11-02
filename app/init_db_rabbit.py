@@ -4,8 +4,8 @@ import itertools as it
 import pika
 from sqlalchemy import inspect
 
-from repository.database import session_factory, Base, engine
-from repository.models import TeamsORM, RegionsORM
+from src.repository.database import session_factory, Base, engine
+from src.repository.models import TeamsORM, RegionsORM
 
 
 teams_data = {
@@ -77,10 +77,16 @@ def initialize_rabbit() -> None:
     with pika.BlockingConnection(params) as connection:
         with connection.channel() as channel:
             logger.info("Creating exchange and queues")            
-            channel.exchange_declare(exchange="matches", exchange_type="topic", durable=True, auto_delete=False)
+            channel.exchange_declare(exchange="matches",
+                                    exchange_type="topic",
+                                    durable=True,
+                                    auto_delete=False)
+            
             
             for team in it.chain.from_iterable(teams_data.values()):
-                channel.queue_declare(f"team.{team}.notifications", durable=True, auto_delete=False)
+                channel.queue_declare(f"team.{team}.notifications",
+                                      durable=True,
+                                      auto_delete=False)
 
                 channel.queue_bind(exchange="matches",
                                    queue=f"team.{team}.notifications",

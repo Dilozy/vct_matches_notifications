@@ -1,8 +1,8 @@
 import time
 import logging
 
-from src.scheduler import JobsScheduler
-from src.api_processor import MatchesDataProcessor
+from src.app.scheduler import JobsScheduler
+from src.app.api_processor import MatchesDataProcessor
 
 
 logging.basicConfig(level=logging.INFO)

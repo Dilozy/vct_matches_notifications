@@ -2,12 +2,12 @@ from aiogram.filters import Command, CommandStart
 from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery
 
-from .keyboards import (
+from src.tg_bot.keyboards import (
     create_regions_kb, create_teams_in_region_kb,
     create_subscribed_teams
 )
-from repository import repository
-from tg_bot.dependencies import container
+from src.repository import repository
+from src.tg_bot.dependencies import container
 
 
 handlers_router = Router()
@@ -63,7 +63,7 @@ async def confirm_team_choice_handler(callback: CallbackQuery) -> None:
     
     await callback.message.answer(
         text=f"Оформлена подписка на команду <b>{team}</b>\n"
-              "Ты будешь получать уведомления о матчах за полчаса до начала, "
+              "Ты будешь получать уведомления о матче за полчаса до начала, "
               "а также в момент старта матча",
               parse_mode="HTML")
 

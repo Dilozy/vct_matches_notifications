@@ -8,9 +8,9 @@ from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
-from repository.config import get_db_connection_url
-from repository.database import engine
-from rabbit.producer import produce_message
+from src.repository.config import get_db_connection_url
+from src.repository.database import engine
+from src.rabbit.producer import produce_message
 
 
 class MatchCountdown:
@@ -62,7 +62,7 @@ class JobsScheduler:
         self.scheduler.configure(jobstores=jobstores, timezone=utc)
         self.scheduler.start()
 
-    def _reshedule_notfication_job(self, job: Job, match_data: dict[str, Any]) -> None:
+    def _reshedule_notification_job(self, job: Job, match_data: dict[str, Any]) -> None:
         team1 = match_data["team1"]
         team2 = match_data["team2"]
         new_match_time = match_data["match_time"]
@@ -72,14 +72,15 @@ class JobsScheduler:
         
         if countdown_seconds > 60:
             match_reminder_job = self.scheduler.get_job(f"{team1}_{team2}_reminder")
-            
-            self.scheduler.modify_job(
-                match_reminder_job.id,
-                jobstore="default",
-                trigger=DateTrigger(run_date=new_reminder_time + timedelta(seconds=10),
-                                    timezone=utc),
-                kwargs={"status": countdown_status},
-            )
+
+            if match_reminder_job:
+                self.scheduler.modify_job(
+                    match_reminder_job.id,
+                    jobstore="default",
+                    trigger=DateTrigger(run_date=new_reminder_time + timedelta(seconds=10),
+                                        timezone=utc),
+                    kwargs={"status": countdown_status},
+                )
             
         self.scheduler.modify_job(
             job.id,
