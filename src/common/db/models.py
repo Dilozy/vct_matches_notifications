@@ -1,7 +1,10 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase
 
-from src.common.repository.database import Base
+
+class Base(DeclarativeBase):
+    pass
 
 
 class SubscribersORM(Base):

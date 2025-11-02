@@ -4,8 +4,8 @@ import itertools as it
 import pika
 from sqlalchemy import inspect
 
-from src.common.repository.database import session_factory, Base, engine
-from src.common.repository.models import TeamsORM, RegionsORM
+from src.common.db.connect import session_factory, Base, engine
+from src.common.db.models import TeamsORM, RegionsORM
 
 
 teams_data = {

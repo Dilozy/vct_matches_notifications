@@ -8,13 +8,9 @@ from aio_pika import Channel
 
 from aiogram import Bot
 
-from src.common.repository.repository import Repository
-
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-repository = Repository()
 
 
 class UserConsumer:

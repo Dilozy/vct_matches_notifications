@@ -1,5 +1,10 @@
 import os
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from src.common.db.connect import get_db_connection_url
+
 
 def get_db_connection_url() -> str:
     db_user = os.getenv("POSTGRES_USER")
@@ -12,3 +17,12 @@ def get_db_connection_url() -> str:
         db_host = os.getenv("POSTGRES_HOST")
 
     return f"postgresql+psycopg://{db_user}:{db_pw}@{db_host}:5432/{db_name}"
+
+
+engine = create_engine(
+    url=get_db_connection_url(),
+    pool_size=5,
+    max_overflow=10,
+)
+
+session_factory = sessionmaker(engine)

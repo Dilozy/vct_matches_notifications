@@ -6,12 +6,11 @@ from src.bot.keyboards import (
     create_regions_kb, create_teams_in_region_kb,
     create_subscribed_teams
 )
-from src.common.repository import repository
+from src.common.db.repositories import SubscriptionRepository, SubscriberRepository
 from src.bot.dependencies import container
 
 
 handlers_router = Router()
-repository = repository.Repository()
 
 
 @handlers_router.message(CommandStart())
@@ -55,10 +54,10 @@ async def confirm_team_choice_handler(callback: CallbackQuery) -> None:
     
     await callback.message.delete()
 
-    if not repository.check_user(user_chat_id):
-        repository.create_subscriber(user_chat_id)
+    if not SubscriberRepository.check_subscriber(user_chat_id):
+        SubscriberRepository.create_subscriber(user_chat_id)
     
-    repository.add_subscription(user_chat_id, team)
+    SubscriptionRepository.add_subscription(user_chat_id, team)
     await container.user_consumer.bind_user(user_chat_id, team)
     
     await callback.message.answer(
@@ -80,7 +79,7 @@ async def confirm_subscription_removal_handler(callback: CallbackQuery) -> None:
     removed_team = callback.data.split(":")[1]
     user_chat_id = callback.message.chat.id
     
-    repository.remove_subscription(user_chat_id, removed_team)
+    SubscriptionRepository.remove_subscription(user_chat_id, removed_team)
     await container.user_consumer.unbind_user(user_chat_id, removed_team)
 
     await callback.message.delete()
@@ -90,7 +89,7 @@ async def confirm_subscription_removal_handler(callback: CallbackQuery) -> None:
 
 @handlers_router.message(Command("list_subscriptions"))
 async def list_subscriptions_handler(message: Message) -> None:
-    subscriptions_data = repository.list_user_subscriptions(message.chat.id)
+    subscriptions_data = SubscriptionRepository.list_subscriptions(message.chat.id)
 
     emea_teams = ', '.join(team for team in subscriptions_data
                            if subscriptions_data[team] == 'EMEA')

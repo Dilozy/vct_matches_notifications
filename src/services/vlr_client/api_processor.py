@@ -5,10 +5,9 @@ import requests
 from pytz import utc
 from requests.exceptions import Timeout, ConnectionError, HTTPError
 
-from src.common.repository.repository import Repository
+from src.common.db.repositories import TeamRepository
 
 
-repository = Repository()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -16,7 +15,7 @@ logger = logging.getLogger(__name__)
 class MatchesDataProcessor:
     def __init__(self):
         self.api_endpoint = "https://vlrggapi.vercel.app/match?q=upcoming"
-        self.teams = repository.list_all_teams()
+        self.teams = TeamRepository.list_teams()
 
     def get_vlr_api_response(self) -> list:
         response = requests.get(url=self.api_endpoint, timeout=5)

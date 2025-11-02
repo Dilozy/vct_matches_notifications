@@ -4,10 +4,7 @@ from aiogram.types import (
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from src.common.repository import repository
-
-
-repository = repository.Repository()
+from src.common.db.repositories import TeamRepository, SubscriptionRepository
 
 
 def create_regions_kb() -> InlineKeyboardMarkup:
@@ -23,7 +20,7 @@ def create_regions_kb() -> InlineKeyboardMarkup:
 
 
 def create_teams_in_region_kb(user_chat_id: int, region: str) -> InlineKeyboardMarkup:
-    teams = repository.select_not_subscribed_teams(user_chat_id, region)
+    teams = TeamRepository.select_not_subscribed_teams(user_chat_id, region)
 
     kb = InlineKeyboardBuilder()
 
@@ -38,7 +35,7 @@ def create_teams_in_region_kb(user_chat_id: int, region: str) -> InlineKeyboardM
 
 
 def create_subscribed_teams(user_chat_id: int) -> InlineKeyboardMarkup:
-    teams = repository.list_user_subscriptions(user_chat_id)
+    teams = SubscriptionRepository.list_subscriptions(user_chat_id)
 
     kb = InlineKeyboardBuilder()
 
