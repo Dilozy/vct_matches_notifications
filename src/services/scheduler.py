@@ -1,3 +1,4 @@
+import asyncio
 from datetime import timedelta, datetime
 from typing import Any, Callable
 
@@ -140,7 +141,8 @@ class JobsScheduler:
 
     def daily_matches_check(self, collect_matches_func: Callable[[], None]) -> None:
         if not self.scheduler.get_job(job_id="daily_matches_check"):
-            start_date = self._calculate_start_date() + timedelta(seconds=20)
+            #start_date = self._calculate_start_date() + timedelta(seconds=20)
+            start_date = datetime.now(utc) + timedelta(minutes=1)
             self.scheduler.add_job(
                 collect_matches_func,
                 trigger=IntervalTrigger(minutes=30,
