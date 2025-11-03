@@ -4,7 +4,7 @@ from aiogram.types import (
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from src.common.db.repositories import TeamRepository, SubscriptionRepository
+from src.db.repositories import TeamRepository, SubscriptionRepository
 
 
 def create_regions_kb() -> InlineKeyboardMarkup:

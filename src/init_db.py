@@ -1,11 +1,9 @@
 import logging
-import itertools as it
 
-import pika
 from sqlalchemy import inspect
 
-from src.common.db.connect import session_factory, Base, engine
-from src.common.db.models import Team, Region
+from src.db.connect import session_factory, engine
+from src.db.models import Team, Region, Base
 
 
 teams_data = {
@@ -72,29 +70,5 @@ def initialize_db() -> None:
             print("Data already exists, skipping initialization.")
 
 
-def initialize_rabbit() -> None:
-    params = pika.ConnectionParameters(host="rabbit", port=5672)
-    with pika.BlockingConnection(params) as connection:
-        with connection.channel() as channel:
-            logger.info("Creating exchange and queues")            
-            channel.exchange_declare(exchange="matches",
-                                    exchange_type="topic",
-                                    durable=True,
-                                    auto_delete=False)
-            
-            
-            for team in it.chain.from_iterable(teams_data.values()):
-                channel.queue_declare(f"team.{team}.notifications",
-                                      durable=True,
-                                      auto_delete=False)
-
-                channel.queue_bind(exchange="matches",
-                                   queue=f"team.{team}.notifications",
-                                   routing_key=f"match.{team}")
-            
-            logger.info("Exchange and queues have been created successfully") 
-
-
 if __name__ == "__main__":
     initialize_db()
-    initialize_rabbit()

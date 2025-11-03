@@ -6,8 +6,7 @@ from src.bot.keyboards import (
     create_regions_kb, create_teams_in_region_kb,
     create_subscribed_teams
 )
-from src.common.db.repositories import SubscriptionRepository, SubscriberRepository
-from src.bot.dependencies import container
+from src.db.repositories import SubscriptionRepository, SubscriberRepository
 
 
 handlers_router = Router()
@@ -58,7 +57,6 @@ async def confirm_team_choice_handler(callback: CallbackQuery) -> None:
         SubscriberRepository.create_subscriber(user_chat_id)
     
     SubscriptionRepository.add_subscription(user_chat_id, team)
-    await container.user_consumer.bind_user(user_chat_id, team)
     
     await callback.message.answer(
         text=f"Оформлена подписка на команду <b>{team}</b>\n"
@@ -80,7 +78,6 @@ async def confirm_subscription_removal_handler(callback: CallbackQuery) -> None:
     user_chat_id = callback.message.chat.id
     
     SubscriptionRepository.remove_subscription(user_chat_id, removed_team)
-    await container.user_consumer.unbind_user(user_chat_id, removed_team)
 
     await callback.message.delete()
     await callback.message.answer(f"Вы отменили подписку на матчи команды <b>{removed_team}</b>",

@@ -1,16 +1,4 @@
 services:
-  rabbit:
-    image: rabbitmq:3-management
-    container_name: rabbit_container
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: $RABBIT_USER
-      RABBITMQ_DEFAULT_PASS: $RABBIT_PASS
-    volumes:
-      - rabbitqm_data:/var/lib/rabbitmq
-
   postgres:
     image: postgres:16.9-alpine3.22
     container_name: postgres_container
@@ -30,26 +18,36 @@ services:
     container_name: bot_container
     depends_on:
       - postgres
-      - rabbit
     volumes:
-      - ./src/bot:/app/src/bot
-      - ./src/common:/app/src/common
+      - ./src/bot:/vct_notifications/src/bot
+      - ./src/db:/vct_notifications/src/db
+    environment:
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_HOST: $POSTGRES_HOST
+      BOT_TOKEN: $BOT_TOKEN
 
-  main:
+
+  app:
     build:
       context: .
-      dockerfile: docker/main/Dockerfile.main
-    container_name: main_container
+      dockerfile: docker/app/Dockerfile.app
+    container_name: app_container
     depends_on:
       - postgres
-      - rabbit
       - bot
     volumes:
-      - ./src/services:/app/src/services
-      - ./src/common:/app/src/common
-      - ./src/main.py:/app/src/main.py
-      - ./src/init_data.py:/app/src/init_data.py
-      - ./src/__init__.py:/app/src/__init__.py
+      - ./src/services:/vct_notifications/src/services
+      - ./src/db:/vct_notifications/src/db
+      - ./src/main.py:/vct_notifications/src/main.py
+      - ./src/init_db.py:/vct_notifications/src/init_db.py
+      - ./src/__init__.py:/vct_notifications/src/__init__.py
+    environment:
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_HOST: $POSTGRES_HOST
+      BOT_TOKEN: $BOT_TOKEN
 volumes:
-  rabbitqm_data:
   postgres_data:

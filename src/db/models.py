@@ -22,7 +22,7 @@ class Team(Base):
     __tablename__ = "teams"
 
     name: Mapped[str] = mapped_column(primary_key=True)
-    region_name: Mapped[int] = mapped_column(ForeignKey("regions.name", ondelete="CASCADE"))
+    region_name: Mapped[str] = mapped_column(ForeignKey("regions.name", ondelete="CASCADE"))
     region: Mapped["Region"] = relationship(
         back_populates="teams",
     )

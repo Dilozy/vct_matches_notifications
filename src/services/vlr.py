@@ -5,7 +5,7 @@ import requests
 from pytz import utc
 from requests.exceptions import Timeout, ConnectionError, HTTPError
 
-from src.common.db.repositories import TeamRepository
+from src.db.repositories import TeamRepository
 
 
 logging.basicConfig(level=logging.INFO)

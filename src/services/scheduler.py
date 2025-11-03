@@ -1,3 +1,4 @@
+import asyncio
 from datetime import timedelta, datetime
 from typing import Any, Callable
 
@@ -8,8 +9,8 @@ from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
-from src.common.db.connect import get_db_connection_url, engine
-from src.common.rabbit.producer import produce_message
+from src.db.connect import get_db_connection_url, engine
+from src.services.notifications import send_notifications
 
 
 class MatchCountdown:
@@ -30,7 +31,6 @@ class MatchCountdown:
             return "минуты"
         else:
             return "минут"
-
 
     def _get_status_msg(self) -> str:
         time_diff = self._get_reminder_time_diff(self.match_time)
@@ -78,7 +78,7 @@ class JobsScheduler:
                     jobstore="default",
                     trigger=DateTrigger(run_date=new_reminder_time + timedelta(seconds=10),
                                         timezone=utc),
-                    kwargs={"status": countdown_status},
+                    args=(team1, team2, countdown_status),
                 )
             
         self.scheduler.modify_job(
@@ -98,18 +98,16 @@ class JobsScheduler:
         
         if countdown_seconds > 60:
             self.scheduler.add_job(
-                produce_message,
-                args=(team1, team2),
-                kwargs={"status": countdown_status},
+                send_notifications,
+                args=(team1, team2, countdown_status),
                 trigger=DateTrigger(run_date=reminder_time + timedelta(seconds=10),
                                     timezone=utc),
                 id=f"{team1}_{team2}_reminder"
             )
 
         self.scheduler.add_job(
-            produce_message,
-            args=(team1, team2),
-            kwargs={"status": "прямо сейчас!"},
+            send_notifications,
+            args=(team1, team2, "прямо сейчас!"),
             trigger=DateTrigger(run_date=match_time + timedelta(seconds=10),
                                 timezone=utc),
             id=f"{team1}_{team2}_start"
@@ -143,7 +141,8 @@ class JobsScheduler:
 
     def daily_matches_check(self, collect_matches_func: Callable[[], None]) -> None:
         if not self.scheduler.get_job(job_id="daily_matches_check"):
-            start_date = self._calculate_start_date() + timedelta(seconds=20)
+            #start_date = self._calculate_start_date() + timedelta(seconds=20)
+            start_date = datetime.now(utc) + timedelta(minutes=1)
             self.scheduler.add_job(
                 collect_matches_func,
                 trigger=IntervalTrigger(minutes=30,

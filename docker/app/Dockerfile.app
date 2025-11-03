@@ -12,26 +12,27 @@ ENV PATH="${PATH}:${POETRY_VENV}/bin"
 
 RUN apk update && apk add --no-cache bash
 
-WORKDIR /app
-ENV PYTHONPATH=/app
+WORKDIR /vct_notifications
+ENV PYTHONPATH=/vct_notifications
 
 COPY pyproject.toml poetry.lock ./
-COPY docker/app docker/
 COPY docker/wait-for-it.sh docker/
 COPY docker/entrypoint_app.sh docker/
 
 RUN poetry install --no-root --no-interaction --no-ansi
 RUN chmod +x docker/entrypoint_app.sh
+RUN chmod +x docker/wait-for-it.sh
 RUN sed -i 's/\r$//' docker/entrypoint_app.sh docker/wait-for-it.sh
 
-WORKDIR /app/src
+WORKDIR /vct_notifications/src
 
-COPY src/common .
+COPY src/db .
 COPY src/services .
 COPY src/__init__.py .
-COPY src/init_data.py .
+COPY src/init_db.py .
 COPY src/main.py .
+COPY src/domains.py .
 
-WORKDIR /
+WORKDIR /vct_notifications
 
 ENTRYPOINT [ "/bin/sh", "docker/entrypoint_app.sh" ]

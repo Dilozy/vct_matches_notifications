@@ -1,8 +1,11 @@
 import time
 import logging
+from datetime import timedelta, datetime
 
-from src.services.scheduler.service import JobsScheduler
-from src.services.vlr_client.api_processor import MatchesDataProcessor
+from pytz import utc
+
+from src.services.scheduler import JobsScheduler
+from src.services.vlr import MatchesDataProcessor
 
 
 logging.basicConfig(level=logging.INFO)
@@ -14,6 +17,8 @@ matches_processor = MatchesDataProcessor()
 
 def process_matches() -> None:
     matches = matches_processor.get_matches_data()
+    matches.append(("BBL Esports", "FNATIC", datetime.now(utc) + timedelta(minutes=33)))
+    matches.append(("BBL Esports", "G2 Esports", datetime.now(utc) + timedelta(minutes=4)))
     logger.info(f"Найдено матчей: {len(matches)}")
     
     for match_ in matches:
