@@ -3,8 +3,6 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.common.db.connect import get_db_connection_url
-
 
 def get_db_connection_url() -> str:
     db_user = os.getenv("POSTGRES_USER")

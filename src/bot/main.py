@@ -5,7 +5,6 @@ import logging
 from aiogram import Bot, Dispatcher
 
 from src.bot.handlers import handlers_router
-from src.bot.dependencies import container
 
 
 bot = Bot(token=os.getenv("BOT_TOKEN"))
@@ -14,7 +13,6 @@ dispatcher.include_router(handlers_router)
 
 
 async def main() -> None:
-    container.initialize(bot)
     await dispatcher.start_polling(bot)
 
 

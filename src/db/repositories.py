@@ -1,7 +1,7 @@
 from sqlalchemy import select, delete, exists
 
-from src.common.db.connect import session_factory
-from src.common.db.models import Subscriber, Team, Subscription, Region
+from src.db.connect import session_factory
+from src.db.models import Subscriber, Team, Subscription, Region
 
 
 class TeamRepository:
@@ -30,6 +30,17 @@ class TeamRepository:
         with session_factory() as session:
             stmt = select(Team.name)
             return session.execute(stmt).scalars().all()
+        
+    @staticmethod
+    def list_subscribers(team_names: list[str]) -> list[int]:
+        with session_factory() as session:
+            stmt = (
+                select(Subscriber.id)
+                .join(Subscriber.subscribed_to)
+                .where(Team.name.in_(team_names))
+                .distinct()
+            )
+            return session.execute(stmt).scalars().all()
 
 
 class SubscriberRepository:
@@ -47,16 +58,6 @@ class SubscriberRepository:
 
             session.commit()
             return user
-
-    @staticmethod
-    def list_subscribers(team_names: list[str]) -> list[int]:
-        with session_factory() as session:
-            stmt = (
-                select(Subscriber.id)
-                .join(Subscriber.subscribed_to)
-                .where(Team.name.in_(team_names))
-            )
-            return session.execute(stmt).scalars().all()
 
 
 class SubscriptionRepository:
