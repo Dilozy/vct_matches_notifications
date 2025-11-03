@@ -28,7 +28,6 @@ WORKDIR /vct_notifications/src
 
 COPY src/bot .
 COPY src/db .
-COPY src/__init__.py .
 
 WORKDIR /vct_notifications
 

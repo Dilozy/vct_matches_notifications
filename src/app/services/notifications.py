@@ -4,10 +4,10 @@ import asyncio
 import aiohttp
 
 from src.db.repositories import TeamRepository
-from src.domains import NotificationDTO
+from src.app.domains import NotificationDTO
 
 
-_loop = asyncio.new_event_loop()
+_loop = asyncio.get_event_loop()
 
 
 class NotificationsClient:

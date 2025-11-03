@@ -38,11 +38,8 @@ services:
       - postgres
       - bot
     volumes:
-      - ./src/services:/vct_notifications/src/services
+      - ./src/app:/vct_notifications/src/app
       - ./src/db:/vct_notifications/src/db
-      - ./src/main.py:/vct_notifications/src/main.py
-      - ./src/init_db.py:/vct_notifications/src/init_db.py
-      - ./src/__init__.py:/vct_notifications/src/__init__.py
     environment:
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
