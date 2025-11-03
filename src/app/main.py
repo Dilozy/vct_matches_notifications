@@ -4,8 +4,8 @@ from datetime import timedelta, datetime
 
 from pytz import utc
 
-from src.services.scheduler import JobsScheduler
-from src.services.vlr import MatchesDataProcessor
+from src.app.services.scheduler import JobsScheduler
+from src.app.services.vlr import MatchesDataProcessor
 
 
 logging.basicConfig(level=logging.INFO)

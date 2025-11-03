@@ -27,11 +27,7 @@ RUN sed -i 's/\r$//' docker/entrypoint_app.sh docker/wait-for-it.sh
 WORKDIR /vct_notifications/src
 
 COPY src/db .
-COPY src/services .
-COPY src/__init__.py .
-COPY src/init_db.py .
-COPY src/main.py .
-COPY src/domains.py .
+COPY src/app .
 
 WORKDIR /vct_notifications
 

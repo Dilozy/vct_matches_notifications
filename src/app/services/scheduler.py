@@ -1,4 +1,3 @@
-import asyncio
 from datetime import timedelta, datetime
 from typing import Any, Callable
 
@@ -10,7 +9,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 from src.db.connect import get_db_connection_url, engine
-from src.services.notifications import send_notifications
+from src.app.services.notifications import send_notifications
 
 
 class MatchCountdown:
